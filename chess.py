@@ -60,8 +60,17 @@ def possible_moves(board, game):
         result = []
         
         # --- Normal Move ---
-        move = (x, y + movement)
-        result.append(move)
+        moves = [(x, y + movement)]
+        
+        # --- Normal Move ---
+        if (white and y == 1) or (not white and y == 6):
+            moves.append((
+                x, y + movement * 2
+            ))
+        
+        for move in moves:
+            if board[move[1]][move[0]] == " ":
+                result.append(move)
         
         return result
 
@@ -75,7 +84,11 @@ def possible_moves(board, game):
         for x, square in enumerate(line):
             if square.upper() in piece_functions:
                 white = square.upper() == square
-                result += pawn(x, y, white)
+                result.append({
+                    "piece": square.upper(),
+                    "from": (x, y),
+                    "to": pawn(x, y, white)
+                })
     
     return result
 
