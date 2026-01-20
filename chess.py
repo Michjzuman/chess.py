@@ -53,6 +53,32 @@ def render(board, game):
         print(" " * 34, move_notation(moves_line))
         moves_line += 2
 
+def possible_moves(board, game):
+    def pawn(x, y, white):
+        movement = 1 if white else -1
+        
+        result = []
+        
+        # --- Normal Move ---
+        move = (x, y + movement)
+        result.append(move)
+        
+        return result
+
+    piece_functions = {
+        "P": pawn
+    }
+    
+    result = []
+    
+    for y, line in enumerate(board):
+        for x, square in enumerate(line):
+            if square.upper() in piece_functions:
+                white = square.upper() == square
+                result += pawn(x, y, white)
+    
+    return result
+
 def imagine_board(game):
     def get_start_board():
         strong_row = "RNBQKBNR"
@@ -79,27 +105,12 @@ def main():
         "Nf3", "Nf6",
         "Nxe5", "Nxe4",
         "Qc6", "f1",
-        
-        "e4", "e5",
-        "Nf3", "Nf6",
-        "Nxe5", "Nxe4",
-        "Qc6", "f1",
-        
-        "e4", "e5",
-        "Nf3", "Nf6",
-        "Nxe5", "Nxe4",
-        "Qc6", "f1",
-        
-        "e4", "e5",
-        "Nf3", "Nf6",
-        "Nxe5", "Nxe4",
-        "Qc6", "f1",
-        
         "Qxg6#"
     ]
     board = imagine_board(game)
     
     render(board, game)
+    print(possible_moves(board, game))
 
 if __name__ == "__main__":
     main()
