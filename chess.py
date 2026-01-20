@@ -30,7 +30,7 @@ def render(board, game):
     moves_line = 0
     for y, line in enumerate(reversed(board)):
         render_lines = [
-            f"{GRAY}{list(reversed(list('abcdefgh')))[y]}{RESET_TO_WHITE} ║",
+            f"{GRAY}{str(8 - y)}{RESET_TO_WHITE} ║",
             f"{WHITE}  {'╚' if y == len(board) - 1 else '╟'}{RESET_TO_WHITE}"
         ]
         for x, square in enumerate(line):
@@ -46,7 +46,7 @@ def render(board, game):
         for render_line in render_lines:
             print(render_line)
         moves_line += 2
-    print(f"{GRAY}    {'   '.join([str(i + 1) for i in range(8)])}{RESET} ", move_notation(moves_line))
+    print(f"{GRAY}    {'   '.join([list(list('abcdefgh'))[i] for i in range(8)])}{RESET} ", move_notation(moves_line))
     moves_line += 2
     while moves_line <= len(game):
         print()
