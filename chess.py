@@ -46,7 +46,7 @@ def render(board, game):
         for render_line in render_lines:
             print(render_line)
         moves_line += 2
-    print(f"{GRAY}    {'   '.join([list(list('abcdefgh'))[i] for i in range(8)])}{RESET} ", move_notation(moves_line))
+    print(f"{GRAY}    {'   '.join([str(i + 1) for i in range(8)])}{RESET}  {WHITE}{move_notation(moves_line)}")
     moves_line += 2
     while moves_line <= len(game):
         print()
