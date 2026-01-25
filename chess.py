@@ -87,7 +87,13 @@ def possible_moves(board, game):
                 result.append({
                     "piece": square.upper(),
                     "from": (x, y),
-                    "to": pawn(x, y, white)
+                    "to": piece_functions[square.upper()](x, y, white),
+                    "notation": (
+                        "" if square.upper() == "P"
+                        else [square.upper()]
+                    )
+                    + ("abcdefgh"[x])
+                    + ("")
                 })
     
     return result
@@ -113,13 +119,14 @@ def imagine_board(game):
     return start_board
 
 def main():
-    game = [
-        "e4", "e5",
-        "Nf3", "Nf6",
-        "Nxe5", "Nxe4",
-        "Qc6", "f1",
-        "Qxg6#"
-    ]
+    game = ["e4"]
+#    game = [
+#        "e4", "e5",
+#        "Nf3", "Nf6",
+#        "Nxe5", "Nxe4",
+#        "Qc6", "f1",
+#        "Qxg6#"
+#    ]
     board = imagine_board(game)
     
     render(board, game)
