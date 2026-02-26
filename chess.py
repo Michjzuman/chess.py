@@ -1,136 +1,61 @@
 import random
 import os
 
-settings = {
-    "show_piece_symbols": False
-}
+class Player:
+    def __init__(self, id: int, name: str, controller):
+        self.id = id
+        self.name = name
+        self.controller = controller
+        self.color = [
+            "white", "black"
+        ][self.id]
 
-def render(board, game):
-    def move_notation(line):
-        move_notation_1 = f"{' ' * 3} {'' if len(game) <= line else game[line]}"
-        move_notation_2 = f"{'' if len(game) <= (line + 1) else (f' {GRAY}-{WHITE} ' + game[line + 1])}"
-        return move_notation_1 + move_notation_2
+class Piece:
+    def __init__(self, player_id: int):
+        self.player_id = player_id
+        self.symbol: str
+        self.code: str
+        self.x: int
+        self.y: int
 
-    RESET = "\033[0m"
-    WHITE = "\033[37m"
-    RESET_TO_WHITE = f"{RESET}{WHITE}"
-    RED = "\033[31m"
-    GREEN = "\033[32m"
-    YELLOW = "\033[33m"
-    BLUE = "\033[34m"
-    GRAY = "\033[90m"
-    
-    SYMBOLS = {"K": "♚", "Q": "♛", "R": "♜", "B": "♝", "N": "♞", "P": "♟", " ": " "}
+class Pawn(Piece):
+    def __init__(self, player_id: int):
+        super().__init__(player_id)
 
-    os.system("clear")
-    os.system("clear")
-    print(f"         {WHITE} • {WHITE}python chess{WHITE} •{RESET}")
-    print()
-    print(f"{WHITE}  ╔{'╤'.join(['═══'] * 8)}╗{RESET_TO_WHITE}")
-    moves_line = 0
-    for y, line in enumerate(reversed(board)):
-        render_lines = [
-            f"{GRAY}{str(8 - y)}{RESET_TO_WHITE} ║",
-            f"{WHITE}  {'╚' if y == len(board) - 1 else '╟'}{RESET_TO_WHITE}"
-        ]
-        for x, square in enumerate(line):
-            square_white = x % 2 == (0 if y % 2 == 0 else 1)
-            piece_white = square != square.lower()
-            bg_color = '100' if square_white else '40'
-            only_bg_color = f"\033[{bg_color};37m"
-            color = f"\033[{bg_color}{';37' if piece_white else ';33'}m"
-            piece = SYMBOLS[square.upper()] if settings["show_piece_symbols"] else square.upper()
-            render_lines[0] += f"{color} {piece}{RESET_TO_WHITE}{only_bg_color} {'║' if x == len(line) - 1 else'│'}{RESET_TO_WHITE}"
-            render_lines[1] += f"{only_bg_color}{('═' if y == len(board) - 1 else'─') * 3}{('╝' if x == len(line) - 1 else '╧') if y == len(board) - 1 else ('╢' if x == len(line) - 1 else'┼')}{RESET_TO_WHITE}"
-        render_lines[0] += move_notation(moves_line)
-        for render_line in render_lines:
-            print(render_line)
-        moves_line += 2
-    print(f"{GRAY}    {'   '.join([str(i + 1) for i in range(8)])}{RESET}  {WHITE}{move_notation(moves_line)}")
-    moves_line += 2
-    while moves_line <= len(game):
-        print()
-        print(" " * 34, move_notation(moves_line))
-        moves_line += 2
-
-def possible_moves(board, game):
-    def pawn(x, y, white):
-        movement = 1 if white else -1
-        
-        result = []
-        
-        # --- Normal Move ---
-        moves = [(x, y + movement)]
-        
-        # --- Normal Move ---
-        if (white and y == 1) or (not white and y == 6):
-            moves.append((
-                x, y + movement * 2
-            ))
-        
-        for move in moves:
-            if board[move[1]][move[0]] == " ":
-                result.append(move)
-        
-        return result
-
-    piece_functions = {
-        "P": pawn
-    }
-    
-    result = []
-    
-    for y, line in enumerate(board):
-        for x, square in enumerate(line):
-            if square.upper() in piece_functions:
-                white = square.upper() == square
-                result.append({
-                    "piece": square.upper(),
-                    "from": (x, y),
-                    "to": piece_functions[square.upper()](x, y, white),
-                    "notation": (
-                        "" if square.upper() == "P"
-                        else [square.upper()]
-                    )
-                    + ("abcdefgh"[x])
-                    + ("")
-                })
-    
-    return result
-
-def imagine_board(game):
-    def get_start_board():
-        strong_row = "RNBQKBNR"
-        pawn_row = "P" * 8
-        empty_row = [" "] * 8
-        return [
-            list(strong_row),
-            list(pawn_row),
-            empty_row, empty_row,
-            empty_row, empty_row,
-            list(pawn_row.lower()),
-            list(strong_row.lower())
+class Board:
+    def __init__(self):
+        self.lines = [
+            
+        ] + [
+            [None for _ in range(8)]
+            for _ in range(4)
         ]
     
-    start_board = get_start_board()
-    
-    
-    
-    return start_board
+    def draw(self, *, coorditates = True):
+        print(
+            f" \033[90m{' '.join([f' {"abcdefgh"[i]} ' for i in range(8)])}\033[0m" +
+            f"\n╔{'╤'.join(['═══'] * 8)}╗" +
+            f"\n╟{'┼'.join(['───'] * 8)}╢".join([
+                f"""\n║{'│'.join([
+                    f''' {
+                        "_"
+                    } ''' for x, field in enumerate(line)
+                ])}║ \033[90m{8 - y}\033[0m"""
+                for y, line in enumerate(self.lines)
+            ]) +
+            f"\n╚{'╧'.join(['═══'] * 8)}╝" +
+            f"\n \033[90m{' '.join([f' {"abcdefgh"[i]} ' for i in range(8)])}\033[0m"
+        )
 
-def main():
-    game = ["e4"]
-#    game = [
-#        "e4", "e5",
-#        "Nf3", "Nf6",
-#        "Nxe5", "Nxe4",
-#        "Qc6", "f1",
-#        "Qxg6#"
-#    ]
-    board = imagine_board(game)
-    
-    render(board, game)
-    print(possible_moves(board, game))
+class Game:
+    def __init__(self):
+        self.history = []
+        self.board = Board()
+
+def play():
+    game = Game()
+    os.system("clear; clear")
+    game.board.draw(coorditates = True)
 
 if __name__ == "__main__":
-    main()
+    play()
